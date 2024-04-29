@@ -1,0 +1,410 @@
+	//Needs to have x0 point the head of the linked list
+    .global traverse
+    //Needs to have x0 point the head of the linked list
+    .global traverse_free
+    //x0 point the tail of the linked list
+    //x1 point to the head of the linked list
+    //x2 point to a string to add to the list
+    .global add_node_to_list
+    //x0 points to a buffer
+    //x1 points to a prompt string
+    .global get_kbd_input
+    //x0 points to the head of the linked list
+    //x1 contains the binary signed index
+    .global delete_single_node
+    //x0 points to the head of the linked list
+    //x1 contains the binary signed index
+    .global find_node
+    //x0 points to the head of the linked list
+    //x1 contains the binary signed index
+    //x2 points to the new string
+    .global edit_node
+    //x0 points to the head of the linked list
+    //x1 points to the tail of the linked list
+    //x2 contains the file descriptor
+    //Need to close file after function returns
+    .global Read_file
+
+
+    .equ NODE_SIZE, 16
+    .equ BUFFER, 21
+
+	.data
+
+    szLF:           .asciz ""
+    szBuffer:       .skip 128
+    szEOF:          .asciz "Reached the end of file\n"
+    szERROR:        .asciz "FILE READ ERROR\n"
+
+    dbNewNodePtr:   .quad 0
+    dbtailPtr:      .quad 0
+    dbheadPtr:      .quad 0
+    dbByteUseage:   .quad 0
+    dbNumNodes:     .quad 0
+
+    iFD:    .byte 0     //Store the file discriptor
+
+    newNodePtr: .quad 0
+
+    .text
+
+traverse:
+    stp x19, x30, [sp, #-16]!
+    mov x19,x0
+
+    traverse_top:
+        ldr x19,[x19]
+        cmp x19,0x0
+        b.eq traverse_exit
+
+        ldr x0,[x19]
+        bl putstring
+
+        add x19, x19, #8
+        b traverse_top
+
+    traverse_exit:
+    ldp x19, x30, [sp], #16
+    ret lr
+
+traverse_free:
+    stp x19, x30, [sp, #-16]!
+    str x20,[sp, #-16]!
+
+    mov x19,x0
+    ldr x19,[x19]
+    
+    traverse_free_top:
+        cmp x19,0x0
+        b.eq traverse_free_exit
+
+        add x20, x19, #8
+        ldr x20, [x20]
+
+        add x20, x19, #8
+        ldr x20, [x20]
+        ldr x0,[x19]
+        bl free
+
+        mov x0,x19
+        bl free
+
+        mov x19, x20
+        b traverse_free_top
+
+    traverse_free_exit:
+    ldr x20,[sp], #16
+    ldp x19, x30, [sp], #16
+    ret lr
+
+add_node_to_list:
+    stp x19, x20, [sp, #-16]!
+    stp x21, x30,[sp, #-16]!
+    mov x19, x0     //x19 = tail
+    mov x20, x1     //x20 = head
+    mov x21, x2     //x21 = string
+
+    mov x0,NODE_SIZE
+    bl malloc
+
+    ldr x1,[x20]    //Go to the head and store in x1
+    cmp x1, 0x0     //Compare the head to null
+    b.eq add_node_to_empty_list //If null add to the empty list
+
+    str x21,[x0]        //Else store the string in the new node
+    ldr x2,[x19]        //Derefrance the tail
+    add x2, x2, #8      //Add 8 to get to the pointer
+    str x0,[x2]         //Store the addr of the new node in the tail
+    str x0,[x19]
+    b add_node_to_list_exit
+
+    add_node_to_empty_list:
+    str x21,[x0]
+    str x0,[x19]
+    str x0,[x20]
+
+    add_node_to_list_exit:
+    ldr x0,=dbNumNodes
+    ldr x1,[x0]
+    add x1, x1, #1
+    str x1,[x0]
+
+    ldp x21, x30,[sp], #16
+    ldp x19, x20, [sp], #16
+    ret lr
+
+get_kbd_input:
+    stp x21, x30,[sp, #-16]!
+    
+    mov x21, x0
+    mov x0,x1
+    bl putstring
+
+    mov x0, x21
+    mov x1, BUFFER
+    bl getstring
+
+    get_kbd_input_return:
+    ldp x21, x30,[sp], #16
+    ret lr
+
+delete_single_node:
+    stp x19, x20, [sp, #-16]!
+    stp x21, x30,[sp, #-16]!
+
+    mov x19,x0  //x19 = head
+
+    ldr x2,[x19]
+
+    cmp x2, 0x0
+    b.eq delete_single_node_exit    //Check for 0 nodes
+    
+    add x2, x2, #8
+    ldr x2,[x2]
+    cmp x2, 0x0
+    b.eq delete_single_node_single  //Check for 1 node
+
+    cmp x1, 0x0
+    b.eq delete_single_node_first
+
+    bl find_node
+
+    ldr x3, [x19]
+    ldr x3, [x3, #8]
+    ldr x19, [x19]
+    delete_single_node_loop1:
+        cmp x3, x0
+        b.eq delete_single_node_loop1_end
+        add x3, x3, #8
+        ldr x3, [x3]
+
+        add x19, x19, #8
+        ldr x19,[x19]
+
+        b delete_single_node_loop1
+
+    delete_single_node_loop1_end:   //x19 = prev node, x0 = node
+    mov x20, x0
+    add x20, x20, #8
+    ldr x20, [x20]      //x20 = next node
+
+    add x19, x19, #8
+    str x20, [x19]
+
+    mov x21, x0
+    ldr x0,[x0]
+    bl free
+
+    mov x0,x21
+    bl free
+
+    b delete_single_node_compleate
+
+    delete_single_node_first:
+    mov x20, x19
+    ldr x20,[x20]       //x20 = node to be deleted
+    ldr x21,[x20, #8]   //x21 = next node
+
+    str x21, [x19]
+
+    mov x21, x20
+    ldr x0,[x20]
+    bl free
+
+    mov x0,x21
+    bl free
+
+    b delete_single_node_compleate
+
+    delete_single_node_single:
+    ldr x21, [x19] 
+    ldr x0, [x21]
+    bl free
+
+    mov x0,x21
+    bl free
+
+    mov x1,0x0
+    str x1,[x19]
+
+    delete_single_node_compleate:
+    ldr x0,=dbNumNodes
+    ldr x1,[x0]
+    sub x1, x1, #1
+    str x1,[x0]
+
+    mov x0,0x1
+
+    delete_single_node_exit:
+    
+    ldp x21, x30,[sp], #16
+    ldp x19, x20, [sp], #16
+    ret lr
+
+//x0 points to the head of the linked list
+//x1 contains the binary signed index
+find_node:
+    stp x19, x20, [sp, #-16]!
+    stp x21, x30,[sp, #-16]!
+
+    mov x19,x0
+    mov x2, 0x0
+
+    find_node_loop:
+        ldr x19,[x19]
+        cmp x19,0x0
+        b.eq find_node_out_of_bounds
+        
+        cmp x2, x1
+        b.eq find_node_done 
+
+        add x2, x2, #1
+        add x19, x19, #8
+        b find_node_loop
+
+    find_node_out_of_bounds:
+    mov x0,0x0
+    b find_node_exit
+
+    find_node_done:
+    mov x0, x19
+
+    find_node_exit:
+    ldp x21, x30,[sp], #16
+    ldp x19, x20, [sp], #16
+    ret lr
+
+edit_node:
+    stp x19, x20, [sp, #-16]! 
+    stp x21, x30, [sp, #-16]!  
+
+    mov x20, x2
+    bl find_node
+    
+    mov x21, x0
+    ldr x0,[x0]
+    bl free
+
+    str x20,[x21]
+
+    edit_node_exit:
+    ldp x21, x30,[sp], #16
+    ldp x19, x20, [sp], #16
+    ret lr
+
+Read_file:
+    str lr, [sp, #-16]! //Push
+
+
+    ldr x3,=dbheadPtr
+    str x0,[x3]
+    ldr x3,=dbtailPtr
+    str x1,[x3]
+    ldr x3,=iFD
+    strb w2,[x3]
+
+    read_file_loop:
+        ldr x0,=iFD     //Point x0 iFD
+        ldrb w0, [x0]   //Derefrance
+        ldr x1,=szBuffer    //Point x1 to the buffer
+        mov x2, 0x0
+
+        bl getline          //Branch and link to getline
+        cmp x0, 0x0         //Compare to 0
+        b.eq read_file_end  //Branch if equal to the end
+
+        ldr x0,=szBuffer
+        ldr x1,=szLF
+        bl String_concat
+        ldr x0,=dbByteUseage
+        ldr x2,[x0]
+        add x2, x2, x1
+        str x2,[x0]
+
+        ldr x1,=dbNewNodePtr
+        str x0,[x1]
+
+        ldr x0,=dbtailPtr
+        ldr x0,[x0]
+        ldr x1,=dbheadPtr
+        ldr x1,[x1]
+        ldr x2,=dbNewNodePtr
+        ldr x2,[x2]
+        bl add_node_to_list
+
+        ldr x0,=dbByteUseage
+        ldr x1,[x0]
+        add x1, x1, #16
+        str x1,[x0]
+
+        ldr x0,=dbNumNodes
+        ldr x1,[x0]
+        add x1, x1, #1
+        str x1,[x0]
+
+        b read_file_loop
+
+    read_file_end:
+    ldr x0,=dbtailPtr
+    ldr x0,[x0]
+    //Need to change last node to have '\n'
+
+
+    ldr lr, [sp], #16   //Pop
+    ret lr
+
+getchar:
+    str lr, [sp, #-16]! //Push
+    mov x2, #1          //Move 1 into x2
+    mov x8, #63         //Do a read
+    svc 0               //Service call
+    ldr lr, [sp], #16   //Pop
+    ret lr              //Return
+
+getline:
+    str lr, [sp, #-16]! //Push
+
+    getline_loop:
+        bl getchar      //Branch and link to getchar
+
+        cmp w0, 0x0     //Compare x0 to 0
+        b.eq EOF        //Branch if equal
+
+        ldrb w2,[x1]    //Load a byte
+        cmp w2, 0xd     //Compare to 10
+
+        b.eq EOLINE     //Branch if equal
+
+        add x1, x1, #1  //Add 1
+
+        ldr x0,=iFD     //Point x0 iFD
+        ldrb w0, [x0]   //Derefrance
+        b getline_loop  //Branch
+
+EOLINE:
+    mov w2, 0x0         //Initialize to 0
+    strb w2, [x1]       //Store a byte into x1
+    b skip              //Branch
+
+EOF:
+    mov x19, x0         //Preserve x0
+    ldr x0,=szEOF       //Point x0 to szEOF
+    bl putstring        //Branch and link to putstring
+    mov x0, x19         //Re point x0
+    b skip              //Branch
+
+ERROR:
+    mov x19, x0     //Preserve x0
+    ldr x0,=szERROR //Point x0 to szERROR
+    bl putstring    //Branch and link to putstring
+    mov x0, x19     //Re point x0
+    b skip          //Branch
+
+skip:
+    ldr lr, [sp], #16   //Pop
+
+    ret lr              //Return
+
+    .end
+
+
