@@ -1,0 +1,101 @@
+    //x0 points to the head of the linked list
+    //x1 points to the tail of the linked list
+    //x2 contains the file descriptor
+    //Need to close file after function returns
+    .global Read_file
+
+    .equ NODE_SIZE, 16
+    .equ BUFFER, 21
+
+	.data
+    szLF:           .asciz "\n"
+    szBuffer:       .skip 128
+    szEOF:          .asciz "Reached the end of file\n"
+    szERROR:        .asciz "FILE READ ERROR\n"
+
+    dbtailPtr:      .quad 0
+
+    iFD:    .byte 0     //Store the file discriptor
+
+    newNodePtr: .quad 0
+	.text
+
+Read_file:
+    stp x19,x20,[sp, #-16]!
+    stp x12,x30,[sp, #-16]!
+
+    ldr x2,=iFD
+    str x1,[x2]
+    ldr x2,=dbtailPtr
+    str x0,[x2]
+
+    read_file_loop:
+        ldr x0,=iFD
+        ldr x0,[x0]
+        ldr x1,=szBuffer    //Point x1 to the buffer
+        mov x2, 0x0
+
+        bl getline          //Branch and link to getline
+        cmp x0, 0x0         //Compare to 0
+        b.eq read_file_end  //Branch if equal to the end
+
+
+
+    read_file_end:
+    ldp x19,x20,[sp], #16
+    ldp x12,x30,[sp], #16
+    ret lr
+
+getchar:
+    str lr, [sp, #-16]! //Push
+    mov x2, #1          //Move 1 into x2
+    mov x8, #63         //Do a read
+    svc 0               //Service call
+    ldr lr, [sp], #16   //Pop
+    ret lr              //Return
+
+getline:
+    str lr, [sp, #-16]! //Push
+    getline_loop:
+        bl getchar      //Branch and link to getchar
+
+        cmp w0, 0x0     //Compare x0 to 0
+        b.eq EOF        //Branch if equal
+
+        ldrb w2,[x1]    //Load a byte
+        cmp w2, 0xa     //Compare to 10
+
+        b.eq EOLINE     //Branch if equal
+
+        add x1, x1, #1  //Add 1
+
+        ldr x0,=iFD     //Point x0 iFD
+        ldrb w0, [x0]   //Derefrance
+        b getline_loop  //Branch
+
+EOLINE:
+    mov w2, 0x0         //Initialize to 0
+    strb w2, [x1]       //Store a byte into x1
+    b skip              //Branch
+
+EOF:
+    mov x19, x0         //Preserve x0
+    ldr x0,=szEOF       //Point x0 to szEOF
+    bl putstring        //Branch and link to putstring
+    mov x0, x19         //Re point x0
+    b skip              //Branch
+
+ERROR:
+    mov x19, x0     //Preserve x0
+    ldr x0,=szERROR //Point x0 to szERROR
+    bl putstring    //Branch and link to putstring
+    mov x0, x19     //Re point x0
+    b skip          //Branch
+
+skip:
+    ldr lr, [sp], #16   //Pop
+
+    ret lr              //Return
+
+    .end
+
