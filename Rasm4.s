@@ -10,7 +10,7 @@
 
 	.data
 
-    szProgName:     .asciz "Name: Ilyas Zuhuruddin\n" //Name of programmer
+    szProgName:     .asciz "Name: Ilyas Zuhuruddin && Kasim Rashid\n" //Name of programmer
     szClass:        .asciz "Class: CS 3B\n"           //Class
     szLab:          .asciz "Lab: Rasm 4\n"            //Lab number
     szDate:         .asciz "Date: 4/25/2024\n"        //Date
