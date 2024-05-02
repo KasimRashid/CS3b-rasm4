@@ -199,40 +199,40 @@ traverse_free:			// branch free
         mov x0,x19		// move x0 - x19
         bl free			// branch to free 
 
-        mov x19, x20
-        b traverse_free_top
+        mov x19, x20		// move x19 - x20
+        b traverse_free_top	// branch to top
 
-    traverse_free_exit:
-    mov x0,0x0
-    mov x1,0x0
+    traverse_free_exit:		// branch exit
+    mov x0,0x0			// move x0 <-null
+    mov x1,0x0			// move x1 -< null
 
-    ldr x20,[sp], #16
-    ldp x19, x30, [sp], #16
-    ret lr
+    ldr x20,[sp], #16		// pop
+    ldp x19, x30, [sp], #16	// pop
+    ret lr			// return 
 
-add_node_to_list:
-    stp x19, x20, [sp, #-16]!
-    stp x21, x30,[sp, #-16]!
+add_node_to_list:		// node add to list jump
+    stp x19, x20, [sp, #-16]!	// push
+    stp x21, x30,[sp, #-16]!	// push
     mov x19, x0     //x19 = tail
     mov x20, x1     //x20 = head
     mov x21, x2     //x21 = string
 
-    mov x0, x2
-    bl String_length
-    add x0, x0, #17
+    mov x0, x2			//move x0 
+    bl String_length		// branch to string length
+    add x0, x0, #17		// x0 + 17
     
-    ldr x1,=dbByteUseage
-    ldr x2,[x1]
-    add x2, x0, x2
-    str x2,[x1]
+    ldr x1,=dbByteUseage	// load x1 dbByteUseage
+    ldr x2,[x1]			// load x2 -x1
+    add x2, x0, x2		// x2 =+x0
+    str x2,[x1]			// store x2 - x1
 
-    ldr x0,=dbNumNodes
-    ldr x1,[x0]
-    add x1, x1, #1
-    str x1,[x0]
+    ldr x0,=dbNumNodes		// load x0 dbNumNodes
+    ldr x1,[x0]			// load x1 - x0
+    add x1, x1, #1		// ++x1
+    str x1,[x0]			// store x1 with x0
 
-    mov x0,NODE_SIZE
-    bl malloc
+    mov x0,NODE_SIZE		// move x0 - NODE_SIZE
+    bl malloc			// branch malloc
 
     ldr x1,[x20]    //Go to the head and store in x1
     cmp x1, 0x0     //Compare the head to null
@@ -242,110 +242,114 @@ add_node_to_list:
     ldr x2,[x19]        //Derefrance the tail
     add x2, x2, #8      //Add 8 to get to the pointer
     str x0,[x2]         //Store the addr of the new node in the tail
-    str x0,[x19]
-    b add_node_to_list_exit
+    str x0,[x19]	// store 
+    b add_node_to_list_exit	// branch to end
 
-    add_node_to_empty_list:
-    str x21,[x0]
-    str x0,[x19]
-    str x0,[x20]
+    add_node_to_empty_list:	// branch if enmpty 
+    str x21,[x0]		// store x21 - x0
+    str x0,[x19]		// store
+    str x0,[x20]		/// store
 
-    add_node_to_list_exit:
+    add_node_to_list_exit:	// exit of add node to list 
     
-    ldr x0,=dbNumNodes
-    ldr x0,[x0]
-    ldr x1,=dbByteUseage
-    ldr x1,[x1]
+    ldr x0,=dbNumNodes		// load x0 -> dbNumNodes
+    ldr x0,[x0]			// load x0 - x0
+    ldr x1,=dbByteUseage	// load x1 -> dbByteUsage
+    ldr x1,[x1]			// load x1 -> x1
 
-    ldp x21, x30,[sp], #16
-    ldp x19, x20, [sp], #16
-    ret lr
+    ldp x21, x30,[sp], #16	// pp
+    ldp x19, x20, [sp], #16	// pp
+    ret lr			// return 
 
-get_kbd_input:
-    stp x21, x30,[sp, #-16]!
+get_kbd_input:			// branch to KBD inputs 
+    stp x21, x30,[sp, #-16]!	// push
     
-    mov x21, x0
-    mov x0,x1
-    bl putstring
+    mov x21, x0			// move x21 - x0
+    mov x0,x1			// move x0 - x1
+    bl putstring		// branch putstring
 
-    mov x0, x21
-    mov x1, BUFFER
-    bl getstring
+    mov x0, x21			// move x0 - x21
+    mov x1, BUFFER		// move x1 - > BUFFER
+    bl getstring		// branch to getstring
 
-    get_kbd_input_return:
-    ldp x21, x30,[sp], #16
-    ret lr
+    get_kbd_input_return:	// jump back
+    ldp x21, x30,[sp], #16	// poop
+    ret lr			// return 
 
-delete_single_node:
-    stp x19, x20, [sp, #-16]!
-    stp x21, x30,[sp, #-16]!
+delete_single_node:		// delete singal node
+    stp x19, x20, [sp, #-16]!	// posh 
+    stp x21, x30,[sp, #-16]!	// poshj 
 
-    mov x19,x0  //x19 = head
+    mov x19,x0  //x19 = head	// move x19 - x0 
 
-    ldr x2,[x19]
+    ldr x2,[x19]		// load x2 - x19
 
-    cmp x2, 0x0
+    cmp x2, 0x0			// compare x2 - null 
     b.eq delete_single_node_exit    //Check for 0 nodes
     
-    add x2, x2, #8
-    ldr x2,[x2]
-    cmp x2, 0x0
+    add x2, x2, #8		// x2 += 8
+    ldr x2,[x2]			// load x2 - x2 
+    cmp x2, 0x0			// compare x2 to null
     b.eq delete_single_node_single  //Check for 1 node
 
-    cmp x1, 0x0
-    b.eq delete_single_node_first
+    cmp x1, 0x0			/// compare x1 to null
+    b.eq delete_single_node_first	// beaNCH IF EQUAL 
 
-    bl find_node
-    mov x20, x0
+    bl find_node	 	// branch find_Node
+    mov x20, x0			// move x20, x0 
 
-    ldr x0,=dbNumNodes
-    ldr x1,[x0]
-    sub x1, x1, #1
-    str x1,[x0]
+    ldr x0,=dbNumNodes		// load x0 -> dbNumNodes
+    ldr x1,[x0]			// load x1 - x0
+    sub x1, x1, #1		// --x1
+    str x1,[x0]			// store x1 - xo
 
-    ldr x0,[x20]
-    bl String_length
+    ldr x0,[x20]		// load x0 - x20
+    bl String_length		// branch to string length
 
-    add x0, x0, #1
-    ldr x1,=dbByteUseage
-    ldr x2,[x1]
-    sub x2, x2, x0
-    str x2,[x1]
+    add x0, x0, #1		// ++x0 
+    ldr x1,=dbByteUseage	// load x1 -> dbByteUseage
+    ldr x2,[x1]			// load x2  x1
+    sub x2, x2, x0		// x2-= x0
+    str x2,[x1]			// store x2 - x1
 
-    mov x0, x20
-    ldr x3, [x19]
-    ldr x3, [x3, #8]
-    ldr x19, [x19]
-    delete_single_node_loop1:
-        cmp x3, x0
-        b.eq delete_single_node_loop1_end
-        add x3, x3, #8
-        ldr x3, [x3]
+    mov x0, x20			// move x0 - x20 
+    ldr x3, [x19]		// load x3 - x19 
+    ldr x3, [x3, #8]		// laod x3, x3 +8
+    ldr x19, [x19]		// deregrence 
+    delete_single_node_loop1:	// hjump to delete 
+        cmp x3, x0		// compere x3 x0  
+        b.eq delete_single_node_loop1_end	// breanch of = to end
+        add x3, x3, #8		// x3+=8
+        ldr x3, [x3]		// load x3 - x3
 
-        add x19, x19, #8
-        ldr x19,[x19]
+        add x19, x19, #8	// x19+= x19+8
+        ldr x19,[x19]		// derefrance x19 
 
-        b delete_single_node_loop1
+        b delete_single_node_loop1	// branch to delete node 
 
     delete_single_node_loop1_end:   //x19 = prev node, x0 = node
-    mov x20, x0
-    add x20, x20, #8
+    mov x20, x0			// move x10 x0 
+    add x20, x20, #8		// x20 +=8
     ldr x20, [x20]      //x20 = next node
 
-    add x19, x19, #8
-    str x20, [x19]
+    add x19, x19, #8	// x19 +=8
+    str x20, [x19]	// store x20 - x19
 
-    mov x21, x0
-    ldr x0,[x0]
-    bl free
+    mov x21, x0		// move x21 wit x0
+    ldr x0,[x0]		// laod x0 - x0
+    bl free		// branch to free
 
-    mov x0,x21
-    bl free
+    mov x0,x21		// move x0 to x21
+    bl free		// branch to free
 
-    b delete_single_node_compleate
+    b delete_single_node_compleate	// branch to delete
 
     delete_single_node_first:
+    mov x20, x19			// move x20 - x19
+=======
+    delete_single_node_first:
     mov x20, x19		//Move a value into x20
+
     ldr x20,[x20]       //x20 = node to be deleted
     ldr x21,[x20, #8]   //x21 = next node
 
