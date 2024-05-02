@@ -221,6 +221,14 @@ _start:
         b main_loop_clear
 
     case_5:
+        ldr x0,=szBuffer
+        ldr x1,=szPrompt
+        bl get_kbd_input
+
+        ldr x0,=headPtr
+        ldr x1,=szBuffer
+        bl String_search
+
         b main_loop_clear
 
     case_6:
