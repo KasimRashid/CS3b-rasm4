@@ -1,69 +1,171 @@
 	//Needs to have x0 point the head of the linked list
     .global traverse
+
     //Needs to have x0 point the head of the linked list
+    //x0 returns the new number of nodes
+    //x1 returns the new byte consumption
     .global traverse_free
+
     //x0 point the tail of the linked list
     //x1 point to the head of the linked list
     //x2 point to a string to add to the list
+    //x0 returns the new number of nodes
+    //x1 returns the new byte consumption
     .global add_node_to_list
+
     //x0 points to a buffer
     //x1 points to a prompt string
     .global get_kbd_input
+
     //x0 points to the head of the linked list
     //x1 contains the binary signed index
+    //x0 returns the new number of nodes
+    //x1 returns the new byte consumption
     .global delete_single_node
+
     //x0 points to the head of the linked list
     //x1 contains the binary signed index
     .global find_node
+
     //x0 points to the head of the linked list
     //x1 contains the binary signed index
     //x2 points to the new string
     .global edit_node
+
     //x0 points to the head of the linked list
     //x1 points to the tail of the linked list
     //x2 contains the file descriptor
+    //x0 returns the new number of nodes
+    //x1 returns the new byte consumption
     //Need to close file after function returns
     .global Read_file
 
+    //x0 points to the head of the linked list
+    //x1 contains the file descriptor
+    .global Output_file
+
+    .global Print_menu
 
     .equ NODE_SIZE, 16
     .equ BUFFER, 21
 
 	.data
 
-    szLF:           .asciz ""
+    szLF:           .asciz "\n"
     szBuffer:       .skip 128
-    szEOF:          .asciz "Reached the end of file\n"
     szERROR:        .asciz "FILE READ ERROR\n"
+
+    szdash:         .asciz "-------------------------------------------------------------------------------------------------------------\n"
+    szMenu1:        .asciz "                      RASM4 TEXT EDITOR\n"
+    szMenu2:        .asciz "        Data Structure Heap Memory Consumption: "
+    szMenu3:        .asciz " bytes\n"
+    szMenu4:        .asciz "        Number of Nodes: "
+    szMenu5:        .asciz "<1> View all strings\n\n<2> Add string\n    <a> from Keyboard\n    <b> from File\n\n"
+    szMenu6:        .asciz "<3> Delete string. Given an index #, delete the entire string and de-allocate memory (including the node).\n\n"
+    szMenu7:        .asciz "<4> Edit string. Given an index #, replace old string w/ new string. Allocate/De-allocate as needed.\n\n"
+    szMenu8:        .asciz "<5> String search. Regardless of case, return all strings that match the substring given.\n\n"
+    szMenu9:        .asciz "<6> Save File (output.txt)\n\n<7> Quit\n\n"
+
+    szBopen:        .asciz "["
+    szBclose:       .asciz "] "
+
 
     dbNewNodePtr:   .quad 0
     dbtailPtr:      .quad 0
     dbheadPtr:      .quad 0
+
     dbByteUseage:   .quad 0
     dbNumNodes:     .quad 0
 
     iFD:    .byte 0     //Store the file discriptor
+    oFD:    .byte 0
+    chLF:   .byte 0xa
 
     newNodePtr: .quad 0
 
     .text
 
+Print_menu:
+    str lr,[sp, #-16]!
+
+    ldr x0,=szdash
+    bl putstring
+
+    ldr x0,=szMenu1
+    bl putstring
+
+    ldr x0,=szMenu2
+    bl putstring
+    ldr x0,=dbByteUseage
+    ldr x0,[x0]
+    ldr x1,=szBuffer
+    bl int64asc
+    ldr x0,=szBuffer
+    bl putstring
+    ldr x0,=szMenu3
+    bl putstring
+
+    ldr x0,=szMenu4
+    bl putstring
+    ldr x0,=dbNumNodes
+    ldr x0,[x0]
+    ldr x1,=szBuffer
+    bl int64asc
+    ldr x0,=szBuffer
+    bl putstring
+    ldr x0,=chLF
+    bl putch
+
+    ldr x0,=szMenu5
+    bl putstring
+    ldr x0,=szMenu6
+    bl putstring
+    ldr x0,=szMenu7
+    bl putstring
+    ldr x0,=szMenu8
+    bl putstring
+    ldr x0,=szMenu9
+    bl putstring
+    
+    ldr x0,=szdash
+    bl putstring
+
+    Print_menu_exit:
+    ldr lr,[sp], #16
+    ret lr
+
+    
+
 traverse:
     stp x19, x30, [sp, #-16]!
+    str x20, [sp, #-16]!
     mov x19,x0
+    mov x20, 0x0
 
     traverse_top:
         ldr x19,[x19]
         cmp x19,0x0
         b.eq traverse_exit
 
+        ldr x0,=szBopen
+        bl putstring
+        mov x0,x20
+        ldr x1,=szBuffer
+        bl int64asc
+        ldr x0,=szBuffer
+        bl putstring
+        ldr x0,=szBclose
+        bl putstring
+
         ldr x0,[x19]
         bl putstring
 
+        add x20, x20, #1
         add x19, x19, #8
         b traverse_top
 
     traverse_exit:
+    ldr x20, [sp], #16
     ldp x19, x30, [sp], #16
     ret lr
 
@@ -93,6 +195,9 @@ traverse_free:
         b traverse_free_top
 
     traverse_free_exit:
+    mov x0,0x0
+    mov x1,0x0
+
     ldr x20,[sp], #16
     ldp x19, x30, [sp], #16
     ret lr
@@ -103,6 +208,20 @@ add_node_to_list:
     mov x19, x0     //x19 = tail
     mov x20, x1     //x20 = head
     mov x21, x2     //x21 = string
+
+    mov x0, x2
+    bl String_length
+    add x0, x0, #17
+    
+    ldr x1,=dbByteUseage
+    ldr x2,[x1]
+    add x2, x0, x2
+    str x2,[x1]
+
+    ldr x0,=dbNumNodes
+    ldr x1,[x0]
+    add x1, x1, #1
+    str x1,[x0]
 
     mov x0,NODE_SIZE
     bl malloc
@@ -124,10 +243,11 @@ add_node_to_list:
     str x0,[x20]
 
     add_node_to_list_exit:
+    
     ldr x0,=dbNumNodes
-    ldr x1,[x0]
-    add x1, x1, #1
-    str x1,[x0]
+    ldr x0,[x0]
+    ldr x1,=dbByteUseage
+    ldr x1,[x1]
 
     ldp x21, x30,[sp], #16
     ldp x19, x20, [sp], #16
@@ -168,7 +288,23 @@ delete_single_node:
     b.eq delete_single_node_first
 
     bl find_node
+    mov x20, x0
 
+    ldr x0,=dbNumNodes
+    ldr x1,[x0]
+    sub x1, x1, #1
+    str x1,[x0]
+
+    ldr x0,[x20]
+    bl String_length
+
+    add x0, x0, #1
+    ldr x1,=dbByteUseage
+    ldr x2,[x1]
+    sub x2, x2, x0
+    str x2,[x1]
+
+    mov x0, x20
     ldr x3, [x19]
     ldr x3, [x3, #8]
     ldr x19, [x19]
@@ -208,7 +344,21 @@ delete_single_node:
     str x21, [x19]
 
     mov x21, x20
+
+    ldr x0,=dbNumNodes
+    ldr x1,[x0]
+    sub x1, x1, #1
+    str x1,[x0]
+
     ldr x0,[x20]
+    bl String_length
+
+    add x0, x0, #17
+    ldr x1,=dbByteUseage
+    ldr x2,[x1]
+    sub x2, x2, x0
+    str x2,[x1]
+    ldr x0,[x21]
     bl free
 
     mov x0,x21
@@ -228,14 +378,13 @@ delete_single_node:
     str x1,[x19]
 
     delete_single_node_compleate:
-    ldr x0,=dbNumNodes
-    ldr x1,[x0]
-    sub x1, x1, #1
-    str x1,[x0]
-
-    mov x0,0x1
 
     delete_single_node_exit:
+
+    ldr x0,=dbNumNodes
+    ldr x0,[x0]
+    ldr x1,=dbByteUseage
+    ldr x1,[x1]
     
     ldp x21, x30,[sp], #16
     ldp x19, x20, [sp], #16
@@ -282,10 +431,25 @@ edit_node:
     bl find_node
     
     mov x21, x0
-    ldr x0,[x0]
+    bl String_length
+    add x0, x0, #1
+    ldr x1,=dbByteUseage
+    ldr x2,[x1]
+    sub x2, x2, x0
+    str x2,[x1]
+
+    ldr x0,[x21]
     bl free
 
     str x20,[x21]
+    mov x0, x20
+    bl String_length
+    add x0, x0, #1
+    ldr x1,=dbByteUseage
+    ldr x2,[x1]
+    add x2, x2, x0
+    str x2,[x1]
+
 
     edit_node_exit:
     ldp x21, x30,[sp], #16
@@ -316,10 +480,6 @@ Read_file:
         ldr x0,=szBuffer
         ldr x1,=szLF
         bl String_concat
-        ldr x0,=dbByteUseage
-        ldr x2,[x0]
-        add x2, x2, x1
-        str x2,[x0]
 
         ldr x1,=dbNewNodePtr
         str x0,[x1]
@@ -332,15 +492,10 @@ Read_file:
         ldr x2,[x2]
         bl add_node_to_list
 
-        ldr x0,=dbByteUseage
-        ldr x1,[x0]
-        add x1, x1, #16
-        str x1,[x0]
-
-        ldr x0,=dbNumNodes
-        ldr x1,[x0]
-        add x1, x1, #1
-        str x1,[x0]
+        ldr x2,=dbNumNodes
+        str x0,[x2]
+        ldr x2,=dbByteUseage
+        str x1,[x2]
 
         b read_file_loop
 
@@ -349,6 +504,10 @@ Read_file:
     ldr x0,[x0]
     //Need to change last node to have '\n'
 
+    ldr x0,=dbNumNodes
+    ldr x0,[x0]
+    ldr x1,=dbByteUseage
+    ldr x1,[x1]
 
     ldr lr, [sp], #16   //Pop
     ret lr
@@ -371,8 +530,7 @@ getline:
         b.eq EOF        //Branch if equal
 
         ldrb w2,[x1]    //Load a byte
-        cmp w2, 0xd     //Compare to 10
-
+        cmp w2, 0xa     //Compare to 10
         b.eq EOLINE     //Branch if equal
 
         add x1, x1, #1  //Add 1
@@ -387,10 +545,8 @@ EOLINE:
     b skip              //Branch
 
 EOF:
-    mov x19, x0         //Preserve x0
-    ldr x0,=szEOF       //Point x0 to szEOF
-    bl putstring        //Branch and link to putstring
-    mov x0, x19         //Re point x0
+    mov w2, 0x0         //Initialize to 0
+    strb w2, [x1]       //Store a byte into x1
     b skip              //Branch
 
 ERROR:
@@ -405,6 +561,38 @@ skip:
 
     ret lr              //Return
 
+Output_file:
+    stp x19, lr, [sp, #-16]!
+
+    mov x19, x0
+    ldr x2,=oFD
+    strb w1,[x2]
+
+    //While head != NULL
+    output_file_loop:
+        ldr x19,[x19]
+        cmp x19,0x0
+        b.eq output_file_return
+
+        ldr x0, [x19]
+        bl String_length
+        mov x2, x0
+
+        ldr x0,=oFD
+        ldrb w0,[x0]
+        mov x8, #64
+        ldr x1, [x19]
+
+        str lr,[sp,#-16]!
+        svc 0
+        ldr lr,[sp],#16
+
+        add x19, x19, #8
+        b output_file_loop
+
+
+    output_file_return:
+    ldp x19, lr, [sp], #16
+    ret lr
+
     .end
-
-
