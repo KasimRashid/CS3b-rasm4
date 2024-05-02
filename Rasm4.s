@@ -103,19 +103,19 @@ _start:
 
         ldr x0,=szBuffer	//Point x0 a variable
         mov x1,0x0			//Move a value into a register
-        str x1,[x0]
+        str x1,[x0]			//Store a value in a register
 
-    b main_loop
+    b main_loop				//Branch to main_loop
 
     menu_choice_invalid:
     ldr x0,=szOutOfBounds	//Point x0 a variable
     bl putstring			//Branch and link
-    b main_loop_clear
+    b main_loop_clear		//Unconditional jump
 
     case_1:
         ldr x0,=headPtr	//Point x0 a variable
         bl traverse		//Branch and link
-        b main_loop_clear
+        b main_loop_clear	//Unconditional jump
 
     
     case_2:
@@ -127,14 +127,14 @@ _start:
             ldr x1,=szLF		//Point x1 a variable
             bl String_concat	//Branch and link
             ldr x1,=newNodePtr	//Point x1 a variable
-            str x0,[x1]
-
+            str x0,[x1]			//Store a value in a register
+	
             ldr x0,=tailPtr		//Point x0 a variable
             ldr x1,=headPtr		//Point x1 a variable
-            ldr x2,=newNodePtr
-            ldr x2,[x2]	
+            ldr x2,=newNodePtr	//Point x2 to a variable
+            ldr x2,[x2]			//Derefrance
             bl add_node_to_list	//Branch and link
-            b main_loop_clear
+            b main_loop_clear	//Unconditional jump
 
         case_2_b:
             ldr x0,=szBuffer	//Point x0 a variable
@@ -157,7 +157,7 @@ _start:
             ldrb w2,[x2]		//Load a byte
         
             bl Read_file		//Branch and link
-            b main_loop_clear
+            b main_loop_clear	//Unconditional jump
 
     case_3:
         ldr x0,=szBuffer		//Point x0 a variable
@@ -167,14 +167,14 @@ _start:
         ldr x0,=szBuffer		//Point x0 a variable
         bl ascint64				//Branch and link
         ldr x1,=szBuffer		//Point x1 a variable
-        str x0,[x1]
+        str x0,[x1]				//Store a value in a register
 
         ldr x0,=headPtr			//Point x0 a variable
         ldr x1,=szBuffer		//Point x1 a variable
-        ldr x1,[x1]
+        ldr x1,[x1]				//Derefrance
         bl delete_single_node	//Branch and link
 
-        b main_loop_clear
+        b main_loop_clear		//Unconditional jump
 
     case_4:
         ldr x0,=szBuffer		//Point x0 a variable
@@ -184,7 +184,7 @@ _start:
         ldr x0,=szBuffer		//Point x0 a variable
         bl ascint64				//Branch and link
         ldr x1,=dbBuffer		//Point x1 a variable
-        str x0,[x1]
+        str x0,[x1]				//Store a value in a register
 
         ldr x0,=szBuffer		//Point x0 a variable
         ldr x1,=szPrompt		//Point x1 a variable
@@ -193,16 +193,16 @@ _start:
         ldr x1,=szLF			//Point x1 a variable
         bl String_concat		//Branch and link
         ldr x1,=newNodePtr		//Point x1 a variable
-        str x0,[x1]
+        str x0,[x1]				//Store a value in a register
         
         ldr x0,=headPtr			//Point x0 a variable
         ldr x1,=dbBuffer		//Point x1 a variable
-        ldr x1,[x1]
-        ldr x2,=newNodePtr
-        ldr x2,[x2]
+        ldr x1,[x1]				//Derefrance
+        ldr x2,=newNodePtr		//Point x2 to a variable
+        ldr x2,[x2]				//Derefrance
         bl edit_node			//Branch and link
 
-        b main_loop_clear
+        b main_loop_clear		//Unconditional jump
 
     case_5:
         ldr x0,=szBuffer		//Point x0 a variable
@@ -213,7 +213,7 @@ _start:
         ldr x1,=szBuffer		//Point x1 a variable
         bl String_search		//Branch and link
 
-        b main_loop_clear
+        b main_loop_clear		//Unconditional jump
 
     case_6:
             ldr x0,=szBuffer		//Point x0 a variable
@@ -235,7 +235,7 @@ _start:
             ldrb w1,[x1]        //Store file discriptor
             bl Output_file		//Branch and link
 
-        b main_loop_clear
+        b main_loop_clear		//Unconditional jump
 
 
     main_loop_end:
