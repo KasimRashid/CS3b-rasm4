@@ -344,181 +344,185 @@ delete_single_node:		// delete singal node
 
     b delete_single_node_compleate	// branch to delete
 
-    delete_single_node_first:		// delete
+    delete_single_node_first:
     mov x20, x19			// move x20 - x19
+=======
+    delete_single_node_first:
+    mov x20, x19		//Move a value into x20
+
     ldr x20,[x20]       //x20 = node to be deleted
     ldr x21,[x20, #8]   //x21 = next node
 
-    str x21, [x19]
+    str x21, [x19]	//Store a value into a register
 
-    mov x21, x20
+    mov x21, x20	//Move a value into a register
 
-    ldr x0,=dbNumNodes
-    ldr x1,[x0]
-    sub x1, x1, #1
-    str x1,[x0]
+    ldr x0,=dbNumNodes	//Point x0 to a variable
+    ldr x1,[x0]			//Derefrance
+    sub x1, x1, #1		//Sub
+    str x1,[x0]			//Store a value into a register
 
-    ldr x0,[x20]
-    bl String_length
+    ldr x0,[x20]		//Derefrance
+    bl String_length	//Branch with link
 
-    add x0, x0, #17
-    ldr x1,=dbByteUseage
-    ldr x2,[x1]
-    sub x2, x2, x0
-    str x2,[x1]
-    ldr x0,[x21]
-    bl free
+    add x0, x0, #17			//Add
+    ldr x1,=dbByteUseage	//Point x1 to a variable
+    ldr x2,[x1]				//Derefrance
+    sub x2, x2, x0			//Sub
+    str x2,[x1]				//Store a value into a register
+    ldr x0,[x21]			//Derefrance
+    bl free					//Branch with link
 
-    mov x0,x21
-    bl free
+    mov x0,x21		//Move a value into a register
+    bl free			//Branch and link
 
     b delete_single_node_compleate
 
     delete_single_node_single:
-    ldr x21, [x19] 
-    ldr x0, [x21]
+    ldr x21, [x19] 	//Load a value into a register
+    ldr x0, [x21]	//Load a value into a register
     bl free
 
-    mov x0,x21
+    mov x0,x21		//Move a value into a register
     bl free
 
-    mov x1,0x0
-    str x1,[x19]
+    mov x1,0x0		//Move a value into a register
+    str x1,[x19]	//Store a value into a register	
 
     delete_single_node_compleate:
 
     delete_single_node_exit:
 
-    ldr x0,=dbNumNodes
-    ldr x0,[x0]
-    ldr x1,=dbByteUseage
-    ldr x1,[x1]
+    ldr x0,=dbNumNodes	//Point x0 to a variable
+    ldr x0,[x0]	//Load a value into a register
+    ldr x1,=dbByteUseage//Point x1 to a variable
+    ldr x1,[x1]	//Load a value into a register
     
-    ldp x21, x30,[sp], #16
-    ldp x19, x20, [sp], #16
+    ldp x21, x30,[sp], #16	//Pop
+    ldp x19, x20, [sp], #16	//Pop
     ret lr
 
 //x0 points to the head of the linked list
 //x1 contains the binary signed index
 find_node:
-    stp x19, x20, [sp, #-16]!
-    stp x21, x30,[sp, #-16]!
+    stp x19, x20, [sp, #-16]!	//Push
+    stp x21, x30,[sp, #-16]!	//Push
 
-    mov x19,x0
-    mov x2, 0x0
+    mov x19,x0		//Move a value into a register
+    mov x2, 0x0		//Move a value into a register
 
     find_node_loop:
-        ldr x19,[x19]
-        cmp x19,0x0
-        b.eq find_node_out_of_bounds
+        ldr x19,[x19]	//Load a value into a register
+        cmp x19,0x0		//Compare 
+        b.eq find_node_out_of_bounds	//Branch
         
-        cmp x2, x1
-        b.eq find_node_done 
+        cmp x2, x1			//Compare 
+        b.eq find_node_done //Branch
 
-        add x2, x2, #1
-        add x19, x19, #8
-        b find_node_loop
+        add x2, x2, #1		//Add
+        add x19, x19, #8	//Add
+        b find_node_loop	//Branch
 
     find_node_out_of_bounds:
-    mov x0,0x0
-    b find_node_exit
+    mov x0,0x0			//Move a value into a register
+    b find_node_exit	//Branch
 
     find_node_done:
-    mov x0, x19
+    mov x0, x19		//Move a value into a register
 
     find_node_exit:
-    ldp x21, x30,[sp], #16
-    ldp x19, x20, [sp], #16
-    ret lr
+    ldp x21, x30,[sp], #16	//Pop
+    ldp x19, x20, [sp], #16	//Pop
+    ret lr	//Return
 
 edit_node:
-    stp x19, x20, [sp, #-16]! 
-    stp x21, x30, [sp, #-16]!  
+    stp x19, x20, [sp, #-16]! 	//Push
+    stp x21, x30, [sp, #-16]!  	//Push
 
-    mov x20, x2
-    bl find_node
+    mov x20, x2		//Move a value into a register
+    bl find_node	//Branch and link
     
-    mov x21, x0
-    bl String_length
-    add x0, x0, #1
-    ldr x1,=dbByteUseage
-    ldr x2,[x1]
-    sub x2, x2, x0
-    str x2,[x1]
+    mov x21, x0			//Move a value into a register
+    bl String_length	//Branch and link
+    add x0, x0, #1		//Add
+    ldr x1,=dbByteUseage//Load a value into a register
+    ldr x2,[x1]			//Load a value into a register
+    sub x2, x2, x0		//Subtract
+    str x2,[x1]			//Store a value in a register
 
-    ldr x0,[x21]
-    bl free
+    ldr x0,[x21]		//Load a value into a register
+    bl free				//Branch and link
 
-    str x20,[x21]
-    mov x0, x20
-    bl String_length
-    add x0, x0, #1
-    ldr x1,=dbByteUseage
-    ldr x2,[x1]
-    add x2, x2, x0
-    str x2,[x1]
+    str x20,[x21]		//Store a value in a register
+    mov x0, x20			//Move a value into a register
+    bl String_length		//Branch and link
+    add x0, x0, #1		//Add
+    ldr x1,=dbByteUseage//Load a value into a register
+    ldr x2,[x1]			//Load a value into a register
+    add x2, x2, x0		//Add
+    str x2,[x1]			//Store a value in a register
 
 
     edit_node_exit:
-    ldp x21, x30,[sp], #16
-    ldp x19, x20, [sp], #16
-    ret lr
+    ldp x21, x30,[sp], #16	//Pop
+    ldp x19, x20, [sp], #16	//Pop
+    ret lr	//Return
 
 Read_file:
     str lr, [sp, #-16]! //Push
 
 
-    ldr x3,=dbheadPtr
-    str x0,[x3]
-    ldr x3,=dbtailPtr
-    str x1,[x3]
-    ldr x3,=iFD
-    strb w2,[x3]
+    ldr x3,=dbheadPtr	//Load a value into a register
+    str x0,[x3]			//Store a value in a register
+    ldr x3,=dbtailPtr	//Load a value into a register
+    str x1,[x3]			//Store a value in a register
+    ldr x3,=iFD			//Load a value into a register
+    strb w2,[x3]		//Store a byte
 
     read_file_loop:
         ldr x0,=iFD     //Point x0 iFD
         ldrb w0, [x0]   //Derefrance
-        ldr x1,=szBuffer    //Point x1 to the buffer
-        mov x2, 0x0
+        ldr x1,=szBuffer //Point x1 to the buffer
+        mov x2, 0x0		//Move a value into a register
 
         bl getline          //Branch and link to getline
         cmp x0, 0x0         //Compare to 0
         b.eq read_file_end  //Branch if equal to the end
 
-        ldr x0,=szBuffer
-        ldr x1,=szLF
+        ldr x0,=szBuffer	//Load a value into a register
+        ldr x1,=szLF		//Load a value into a register
         bl String_concat
 
-        ldr x1,=dbNewNodePtr
-        str x0,[x1]
+        ldr x1,=dbNewNodePtr//Load a value into a register
+        str x0,[x1]			//Store a value in a register
 
-        ldr x0,=dbtailPtr
-        ldr x0,[x0]
-        ldr x1,=dbheadPtr
-        ldr x1,[x1]
-        ldr x2,=dbNewNodePtr
-        ldr x2,[x2]
-        bl add_node_to_list
+        ldr x0,=dbtailPtr	//Load a value into a register
+        ldr x0,[x0]			//Load a value into a register
+        ldr x1,=dbheadPtr	//Load a value into a register
+        ldr x1,[x1]			//Load a value into a register
+        ldr x2,=dbNewNodePtr//Load a value into a register
+        ldr x2,[x2]			//Load a value into a register
+        bl add_node_to_list//Branch and link
 
-        ldr x2,=dbNumNodes
-        str x0,[x2]
-        ldr x2,=dbByteUseage
-        str x1,[x2]
+        ldr x2,=dbNumNodes	//Load a value into a register
+        str x0,[x2]			//Store a value in a register
+        ldr x2,=dbByteUseage//Load a value into a register
+        str x1,[x2]			//Store a value in a register
 
-        b read_file_loop
+        b read_file_loop	//Branch
 
     read_file_end:
-    ldr x0,=dbtailPtr
-    ldr x0,[x0]
+    ldr x0,=dbtailPtr		//Load a value into a register
+    ldr x0,[x0]				//Load a value into a register
     //Need to change last node to have '\n'
 
-    ldr x0,=dbNumNodes
-    ldr x0,[x0]
-    ldr x1,=dbByteUseage
-    ldr x1,[x1]
+    ldr x0,=dbNumNodes		//Load a value into a register
+    ldr x0,[x0]				//Load a value into a register
+    ldr x1,=dbByteUseage	//Load a value into a register
+    ldr x1,[x1]				//Load a value into a register
 
     ldr lr, [sp], #16   //Pop
-    ret lr
+    ret lr	//Return
 
 getchar:
     str lr, [sp, #-16]! //Push
@@ -570,153 +574,153 @@ skip:
     ret lr              //Return
 
 Output_file:
-    stp x19, lr, [sp, #-16]!
+    stp x19, lr, [sp, #-16]!	//Push
 
-    mov x19, x0
-    ldr x2,=oFD
-    strb w1,[x2]
+    mov x19, x0		//Move a value into a register
+    ldr x2,=oFD		//Load a value into a register
+    strb w1,[x2]	//Store a byte
 
     //While head != NULL
     output_file_loop:
-        ldr x19,[x19]
-        cmp x19,0x0
-        b.eq output_file_return
+        ldr x19,[x19]	//Load a value into a register
+        cmp x19,0x0		//Compare 
+        b.eq output_file_return	//Branch
 
-        ldr x0, [x19]
-        bl String_length
-        mov x2, x0
+        ldr x0, [x19]	//Load a value into a register
+        bl String_length//Branch and link
+        mov x2, x0		//Move a value into a register
 
-        ldr x0,=oFD
+        ldr x0,=oFD		//Load a value into a register
         ldrb w0,[x0]
-        mov x8, #64
-        ldr x1, [x19]
+        mov x8, #64		//Move a value into a register
+        ldr x1, [x19]	//Load a value into a register
 
-        str lr,[sp,#-16]!
-        svc 0
-        ldr lr,[sp],#16
+        str lr,[sp,#-16]!	//Push
+        svc 0				//Service call
+        ldr lr,[sp],#16		//Pop
 
-        add x19, x19, #8
-        b output_file_loop
+        add x19, x19, #8	//Add
+        b output_file_loop	//Branch
 
 
     output_file_return:
-    ldp x19, lr, [sp], #16
-    ret lr
+    ldp x19, lr, [sp], #16	//Pop
+    ret lr	//Return
 
 
 //x0 points to the head of the linked list
 //x1 points to a null terminated string to search for
 String_search:
-    stp x19, x20, [sp, #-16]!
-    stp x21, lr, [sp, #-16]!
-    stp x22, x23,[sp, #-16]!
+    stp x19, x20, [sp, #-16]!	//Push
+    stp x21, lr, [sp, #-16]!	//Push
+    stp x22, x23,[sp, #-16]!	//Push
 
-    ldr x2,=newNodePtr
-    str x0,[x2]
-    mov x19, x0
-    mov x20, x1
-    mov x21, 0x0
+    ldr x2,=newNodePtr	//Load a value into a register
+    str x0,[x2]			//Store a value in a register
+    mov x19, x0		//Move a value into a register
+    mov x20, x1		//Move a value into a register
+    mov x21, 0x0	//Move a value into a register
 
     string_search_loop1:
-        ldr x19,[x19]
-        cmp x19,0x0
-        b.eq string_search_loop2
+        ldr x19,[x19]	//Load a value into a register
+        cmp x19,0x0		//Compare 
+        b.eq string_search_loop2	//Branch
 
-        ldr x0,[x19]
-        bl String_toUpperCase
-        mov x22, x0
+        ldr x0,[x19]	//Load a value into a register
+        bl String_toUpperCase	//Branch and link
+        mov x22, x0		//Move a value into a register
 
-        mov x0, x20
-        bl String_toUpperCase
-        mov x23, x0
+        mov x0, x20		//Move a value into a register
+        bl String_toUpperCase	//Branch and link
+        mov x23, x0		//Move a value into a register
 
-        mov x0, x22
-        mov x1, x23
-        bl String_indexOf_3
+        mov x0, x22		//Move a value into a register
+        mov x1, x23		//Move a value into a register
+        bl String_indexOf_3	//Branch and link
 
-        cmp x0, #-1
-        b.eq string_search_incriment1
+        cmp x0, #-1		//Compare 
+        b.eq string_search_incriment1	//Branch
 
-        add x21, x21, #1
+        add x21, x21, #1	//Add
 
         string_search_incriment1:
-        mov x0, x22
-        bl free
-        mov x0, x23
-        bl free
+        mov x0, x22		//Move a value into a register
+        bl free			//Branch and link
+        mov x0, x23		//Move a value into a register
+        bl free			//Branch and link
 
-        add x19, x19, #8
-        b string_search_loop1
+        add x19, x19, #8	//Add
+        b string_search_loop1	//Branch
 
     string_search_loop2:
-    ldr x1,=szBuffer
-    mov x0, x21
-    bl int64asc
+    ldr x1,=szBuffer//Load a value into a register
+    mov x0, x21		//Move a value into a register
+    bl int64asc		//Branch and link
 
-    ldr x0,=szStrSearch1
-    bl putstring
-    mov x0,x20
-    bl putstring
-    ldr x0,=szStrSearch2
-    bl putstring
-    ldr x0,=szBuffer
-    bl putstring
-    ldr x0,=szStrSearch3
-    bl putstring
+    ldr x0,=szStrSearch1	//Load a value into a register
+    bl putstring			//Branch and link
+    mov x0,x20				//Move a value into a register
+    bl putstring			//Branch and link
+    ldr x0,=szStrSearch2	//Load a value into a register
+    bl putstring			//Branch and link
+    ldr x0,=szBuffer		//Load a value into a register
+    bl putstring			//Branch and link
+    ldr x0,=szStrSearch3	//Load a value into a register
+    bl putstring			//Branch and link
 
-    mov x21, 0x0
-    ldr x2,=newNodePtr
-    ldr x19,[x2]
+    mov x21, 0x0	//Move a value into a register
+    ldr x2,=newNodePtr	//Load a value into a register
+    ldr x19,[x2]		//Load a value into a register
 
     string_search_loop:
-        ldr x19,[x19]
-        cmp x19,0x0
-        b.eq string_search_return
+        ldr x19,[x19]	//Load a value into a register
+        cmp x19,0x0		//Compare 
+        b.eq string_search_return	//Branch
 
-        ldr x0,[x19]
-        bl String_toUpperCase
-        mov x22, x0
+        ldr x0,[x19]	//Load a value into a register
+        bl String_toUpperCase	//Branch and link
+        mov x22, x0		//Move a value into a register
 
-        mov x0, x20
-        bl String_toUpperCase
-        mov x23, x0
+        mov x0, x20		//Move a value into a register
+        bl String_toUpperCase	//Branch and link
+        mov x23, x0		//Move a value into a register
 
-        mov x0, x22
-        mov x1, x23
-        bl String_indexOf_3
+        mov x0, x22		//Move a value into a register
+        mov x1, x23		//Move a value into a register
+        bl String_indexOf_3	//Branch and link
 
-        cmp x0, #-1
-        b.eq string_search_incriment
+        cmp x0, #-1		//Compare 
+        b.eq string_search_incriment	//Branch
 
-        ldr x0,=szLineNum
-        bl putstring
-        mov x0,x21
-        ldr x1,=szBuffer
-        bl int64asc
-        ldr x0,=szBuffer
-        bl putstring
-        ldr x0,=chSP
-        bl putch
+        ldr x0,=szLineNum	//Load a value into a register
+        bl putstring		//Branch and link
+        mov x0,x21			//Move a value into a register
+        ldr x1,=szBuffer	//Load a value into a register
+        bl int64asc			//Branch and link
+        ldr x0,=szBuffer	//Load a value into a register
+        bl putstring		//Branch and link
+        ldr x0,=chSP		//Load a value into a register
+        bl putch			//Branch and link
 
-        ldr x0,[x19]
-        bl putstring
+        ldr x0,[x19]		//Load a value into a register
+        bl putstring		//Branch and link
 
         string_search_incriment:
-        mov x0, x22
-        bl free
-        mov x0, x23
-        bl free
-
-        add x19, x19, #8
-        add x21, x21, #1
-        b string_search_loop
+        mov x0, x22		//Move a value into a register
+        bl free			//Branch and link
+        mov x0, x23		//Move a value into a register
+        bl free			//Branch and link
+	
+        add x19, x19, #8	//Add
+        add x21, x21, #1	//Add
+        b string_search_loop//Branch
 
 
     string_search_return:
-    ldp x22, x23,[sp], #16
-    ldp x21, lr, [sp], #16
-    ldp x19, x20, [sp], #16
+    ldp x22, x23,[sp], #16	//Pop
+    ldp x21, lr, [sp], #16	//Pop
+    ldp x19, x20, [sp], #16	//Pop
 
-    ret lr
+    ret lr	//Return
 
     .end
