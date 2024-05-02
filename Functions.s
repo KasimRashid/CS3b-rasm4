@@ -401,11 +401,11 @@ delete_single_node:
 //x0 points to the head of the linked list
 //x1 contains the binary signed index
 find_node:
-    stp x19, x20, [sp, #-16]!
-    stp x21, x30,[sp, #-16]!
+    stp x19, x20, [sp, #-16]!	//Push
+    stp x21, x30,[sp, #-16]!	//Push
 
-    mov x19,x0
-    mov x2, 0x0
+    mov x19,x0		//Move a value into a register
+    mov x2, 0x0		//Move a value into a register
 
     find_node_loop:
         ldr x19,[x19]
@@ -420,11 +420,11 @@ find_node:
         b find_node_loop
 
     find_node_out_of_bounds:
-    mov x0,0x0
+    mov x0,0x0		//Move a value into a register
     b find_node_exit
 
     find_node_done:
-    mov x0, x19
+    mov x0, x19		//Move a value into a register
 
     find_node_exit:
     ldp x21, x30,[sp], #16
@@ -432,13 +432,13 @@ find_node:
     ret lr
 
 edit_node:
-    stp x19, x20, [sp, #-16]! 
-    stp x21, x30, [sp, #-16]!  
+    stp x19, x20, [sp, #-16]! 	//Push
+    stp x21, x30, [sp, #-16]!  	//Push
 
-    mov x20, x2
-    bl find_node
+    mov x20, x2		//Move a value into a register
+    bl find_node	
     
-    mov x21, x0
+    mov x21, x0		//Move a value into a register
     bl String_length
     add x0, x0, #1
     ldr x1,=dbByteUseage
@@ -450,7 +450,7 @@ edit_node:
     bl free
 
     str x20,[x21]
-    mov x0, x20
+    mov x0, x20		//Move a value into a register
     bl String_length
     add x0, x0, #1
     ldr x1,=dbByteUseage
@@ -478,8 +478,8 @@ Read_file:
     read_file_loop:
         ldr x0,=iFD     //Point x0 iFD
         ldrb w0, [x0]   //Derefrance
-        ldr x1,=szBuffer    //Point x1 to the buffer
-        mov x2, 0x0
+        ldr x1,=szBuffer //Point x1 to the buffer
+        mov x2, 0x0		//Move a value into a register
 
         bl getline          //Branch and link to getline
         cmp x0, 0x0         //Compare to 0
@@ -570,9 +570,9 @@ skip:
     ret lr              //Return
 
 Output_file:
-    stp x19, lr, [sp, #-16]!
+    stp x19, lr, [sp, #-16]!	//Push
 
-    mov x19, x0
+    mov x19, x0		//Move a value into a register
     ldr x2,=oFD
     strb w1,[x2]
 
@@ -584,11 +584,11 @@ Output_file:
 
         ldr x0, [x19]
         bl String_length
-        mov x2, x0
+        mov x2, x0		//Move a value into a register
 
         ldr x0,=oFD
         ldrb w0,[x0]
-        mov x8, #64
+        mov x8, #64		//Move a value into a register
         ldr x1, [x19]
 
         str lr,[sp,#-16]!
@@ -607,15 +607,15 @@ Output_file:
 //x0 points to the head of the linked list
 //x1 points to a null terminated string to search for
 String_search:
-    stp x19, x20, [sp, #-16]!
-    stp x21, lr, [sp, #-16]!
-    stp x22, x23,[sp, #-16]!
+    stp x19, x20, [sp, #-16]!	//Push
+    stp x21, lr, [sp, #-16]!	//Push
+    stp x22, x23,[sp, #-16]!	//Push
 
     ldr x2,=newNodePtr
     str x0,[x2]
-    mov x19, x0
-    mov x20, x1
-    mov x21, 0x0
+    mov x19, x0		//Move a value into a register
+    mov x20, x1		//Move a value into a register
+    mov x21, 0x0	//Move a value into a register
 
     string_search_loop1:
         ldr x19,[x19]
@@ -624,14 +624,14 @@ String_search:
 
         ldr x0,[x19]
         bl String_toUpperCase
-        mov x22, x0
+        mov x22, x0		//Move a value into a register
 
-        mov x0, x20
+        mov x0, x20		//Move a value into a register
         bl String_toUpperCase
         mov x23, x0
 
-        mov x0, x22
-        mov x1, x23
+        mov x0, x22		//Move a value into a register
+        mov x1, x23		//Move a value into a register
         bl String_indexOf_3
 
         cmp x0, #-1
@@ -640,9 +640,9 @@ String_search:
         add x21, x21, #1
 
         string_search_incriment1:
-        mov x0, x22
+        mov x0, x22		//Move a value into a register
         bl free
-        mov x0, x23
+        mov x0, x23		//Move a value into a register
         bl free
 
         add x19, x19, #8
@@ -650,12 +650,12 @@ String_search:
 
     string_search_loop2:
     ldr x1,=szBuffer
-    mov x0, x21
+    mov x0, x21		//Move a value into a register
     bl int64asc
 
     ldr x0,=szStrSearch1
     bl putstring
-    mov x0,x20
+    mov x0,x20		//Move a value into a register
     bl putstring
     ldr x0,=szStrSearch2
     bl putstring
@@ -664,7 +664,7 @@ String_search:
     ldr x0,=szStrSearch3
     bl putstring
 
-    mov x21, 0x0
+    mov x21, 0x0	//Move a value into a register
     ldr x2,=newNodePtr
     ldr x19,[x2]
 
@@ -675,14 +675,14 @@ String_search:
 
         ldr x0,[x19]
         bl String_toUpperCase
-        mov x22, x0
+        mov x22, x0		//Move a value into a register
 
-        mov x0, x20
+        mov x0, x20		//Move a value into a register
         bl String_toUpperCase
         mov x23, x0
 
-        mov x0, x22
-        mov x1, x23
+        mov x0, x22		//Move a value into a register
+        mov x1, x23		//Move a value into a register
         bl String_indexOf_3
 
         cmp x0, #-1
@@ -690,7 +690,7 @@ String_search:
 
         ldr x0,=szLineNum
         bl putstring
-        mov x0,x21
+        mov x0,x21		//Move a value into a register
         ldr x1,=szBuffer
         bl int64asc
         ldr x0,=szBuffer
@@ -702,9 +702,9 @@ String_search:
         bl putstring
 
         string_search_incriment:
-        mov x0, x22
+        mov x0, x22		//Move a value into a register
         bl free
-        mov x0, x23
+        mov x0, x23		//Move a value into a register
         bl free
 
         add x19, x19, #8
