@@ -345,57 +345,57 @@ delete_single_node:
     b delete_single_node_compleate
 
     delete_single_node_first:
-    mov x20, x19
+    mov x20, x19		//Move a value into x20
     ldr x20,[x20]       //x20 = node to be deleted
     ldr x21,[x20, #8]   //x21 = next node
 
-    str x21, [x19]
+    str x21, [x19]	//Store a value into a register
 
-    mov x21, x20
+    mov x21, x20	//Move a value into a register
 
-    ldr x0,=dbNumNodes
-    ldr x1,[x0]
-    sub x1, x1, #1
-    str x1,[x0]
+    ldr x0,=dbNumNodes	//Point x0 to a variable
+    ldr x1,[x0]			//Derefrance
+    sub x1, x1, #1		//Sub
+    str x1,[x0]			//Store a value into a register
 
-    ldr x0,[x20]
-    bl String_length
+    ldr x0,[x20]		//Derefrance
+    bl String_length	//Branch with link
 
-    add x0, x0, #17
-    ldr x1,=dbByteUseage
-    ldr x2,[x1]
-    sub x2, x2, x0
-    str x2,[x1]
-    ldr x0,[x21]
-    bl free
+    add x0, x0, #17			//Add
+    ldr x1,=dbByteUseage	//Point x1 to a variable
+    ldr x2,[x1]				//Derefrance
+    sub x2, x2, x0			//Sub
+    str x2,[x1]				//Store a value into a register
+    ldr x0,[x21]			//Derefrance
+    bl free					//Branch with link
 
-    mov x0,x21
-    bl free
+    mov x0,x21		//Move a value into a register
+    bl free			//Branch and link
 
     b delete_single_node_compleate
 
     delete_single_node_single:
-    ldr x21, [x19] 
-    ldr x0, [x21]
+    ldr x21, [x19] 	//Load a value into a register
+    ldr x0, [x21]	//Load a value into a register
     bl free
 
-    mov x0,x21
+    mov x0,x21		//Move a value into a register
     bl free
 
-    mov x1,0x0
-    str x1,[x19]
+    mov x1,0x0		//Move a value into a register
+    str x1,[x19]	//Store a value into a register	
 
     delete_single_node_compleate:
 
     delete_single_node_exit:
 
-    ldr x0,=dbNumNodes
-    ldr x0,[x0]
-    ldr x1,=dbByteUseage
-    ldr x1,[x1]
+    ldr x0,=dbNumNodes	//Point x0 to a variable
+    ldr x0,[x0]	//Load a value into a register
+    ldr x1,=dbByteUseage//Point x1 to a variable
+    ldr x1,[x1]	//Load a value into a register
     
-    ldp x21, x30,[sp], #16
-    ldp x19, x20, [sp], #16
+    ldp x21, x30,[sp], #16	//Pop
+    ldp x19, x20, [sp], #16	//Pop
     ret lr
 
 //x0 points to the head of the linked list
@@ -451,7 +451,7 @@ edit_node:
 
     str x20,[x21]		//Store a value in a register
     mov x0, x20			//Move a value into a register
-    bl String_length	//Branch and link
+    bl String_length		//Branch and link
     add x0, x0, #1		//Add
     ldr x1,=dbByteUseage//Load a value into a register
     ldr x2,[x1]			//Load a value into a register
