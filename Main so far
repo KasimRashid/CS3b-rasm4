@@ -4,7 +4,7 @@
     .equ NODE_SIZE, 16
 
     .equ R, 00          //Read
-    .equ W, 01          //Write
+    .equ W, 0101          //Write
     .equ AT_FDCWD, -100 //Use file discriptor of local dir
     .equ RW_RW, 0644    //Read write perms
 
@@ -14,15 +14,12 @@
     szClass:        .asciz "Class: CS 3B\n"           //Class
     szLab:          .asciz "Lab: Rasm 4\n"              //Lab number
     szDate:         .asciz "Date: 4/25/2024\n"         //Date
+
     szPrompt:       .asciz "Enter a string: "
     szIndexPrompt:  .asciz "Enter an index: "
+
     szLF:           .asciz "\n"
     szFilePromp:    .asciz "Enter a file name: "
-    szEOF:          .asciz "Reached the end of file\n"
-    szERROR:        .asciz "FILE READ ERROR\n"
-    szBytes:        .asciz "Data Structure Heap Memory Consumption: "
-    szBytes2:       .asciz " bytes\n"
-    szNumNodes:     .asciz "Number of Nodes: "
 
     szMenuPrompt:   .asciz "Enter a menu option: "
     szOutOfBounds:  .asciz "Number needs to be between 1 - 7.\n"
@@ -44,6 +41,7 @@
     dbNumNodes:     .quad 0
 
     iFD:    .byte 0     //Store the file discriptor
+    oFD:    .byte 0
     chLF:   .byte 0xa   //Hex for line feed
 	.text
 _start:
@@ -208,11 +206,16 @@ _start:
         ldr x0,=szBuffer
         ldr x1,=szPrompt
         bl get_kbd_input
+        ldr x0,=szBuffer
+        bl String_copy
+        ldr x1,=newNodePtr
+        str x0,[x1]
         
         ldr x0,=headPtr
         ldr x1,=dbBuffer
         ldr x1,[x1]
-        ldr x2,=szBuffer
+        ldr x2,=newNodePtr
+        ldr x2,[x2]
         bl edit_node
 
         b main_loop_clear
@@ -221,6 +224,25 @@ _start:
         b main_loop_clear
 
     case_6:
+            ldr x0,=szBuffer
+            ldr x1,=szFilePromp
+            bl get_kbd_input
+
+            mov x0,#AT_FDCWD    //File descriptor in current directory
+            mov x8,#56          //Open file
+            ldr x1,=szBuffer //Name of the file
+            mov x2,#W           //Create file if not exist, stdout
+            mov x3,#RW_RW       //Read write perms
+            svc 0               //Service call
+            
+            ldr x1,=oFD         //Point x1 to oFD
+            strb w0,[x1]        //Store file discriptor
+
+            ldr x0,=headPtr
+            ldr x1,=oFD         //Point x1 to oFD
+            ldrb w1,[x1]        //Store file discriptor
+            bl Output_file
+
         b main_loop_clear
 
 
@@ -230,6 +252,11 @@ _start:
     bl traverse_free
 
     ldr x0, =iFD        //Point x0 to iFD
+    ldrb w0,[x0]        //Derefrance
+    mov x8,#57          //Close file
+    svc 0               //Service call
+
+    ldr x0, =oFD        //Point x0 to iFD
     ldrb w0,[x0]        //Derefrance
     mov x8,#57          //Close file
     svc 0               //Service call
