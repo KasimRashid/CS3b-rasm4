@@ -77,127 +77,127 @@
     szStrSearch2:   .asciz """ ("
     szStrSearch3:   .asciz " hits in 1 file of 1 searched)\n"
 
-    dbNewNodePtr:   .quad 0
-    dbtailPtr:      .quad 0
-    dbheadPtr:      .quad 0
+    dbNewNodePtr:   .quad 0	// new ptr node
+    dbtailPtr:      .quad 0	// tail ptr
+    dbheadPtr:      .quad 0	// head ptr
 
-    dbByteUseage:   .quad 0
-    dbNumNodes:     .quad 0
+    dbByteUseage:   .quad 0	// all the used bytes
+    dbNumNodes:     .quad 0	// number of nodes
 
-    iFD:    .byte 0     //Store the file discriptor
-    oFD:    .byte 0
-    chLF:   .byte 0xa
-    chSP:   .byte 0x20
+    iFD:    .byte 0     //Store the file descriptor
+    oFD:    .byte 0	// output file discriptor 
+    chLF:   .byte 0xa	// line feed 
+    chSP:   .byte 0x20	// space
 
-    newNodePtr: .quad 0
+    newNodePtr: .quad 0	// NEW ptr node
 
-    .text
+    .text		// text
 
-Print_menu:
-    str lr,[sp, #-16]!
+Print_menu:		// the menu 
+    str lr,[sp, #-16]!	// line register data
 
-    ldr x0,=szdash
-    bl putstring
+    ldr x0,=szdash	// load x0 -> szdash
+    bl putstring	// branch to putstring
 
-    ldr x0,=szMenu1
-    bl putstring
+    ldr x0,=szMenu1	// load x0 -> szMenu1
+    bl putstring	// branch putstring
 
-    ldr x0,=szMenu2
-    bl putstring
-    ldr x0,=dbByteUseage
-    ldr x0,[x0]
-    ldr x1,=szBuffer
-    bl int64asc
-    ldr x0,=szBuffer
-    bl putstring
-    ldr x0,=szMenu3
-    bl putstring
+    ldr x0,=szMenu2	// load x0 -> szMenus2
+    bl putstring	// branch putstring
+    ldr x0,=dbByteUseage	// load x0 -> dbByteUseage
+    ldr x0,[x0]		// load x0 -> x0
+    ldr x1,=szBuffer	// load x1 -> szBuffer
+    bl int64asc		// branch int64asc
+    ldr x0,=szBuffer	// load x0 -> szBuffer
+    bl putstring	// branch putstring
+    ldr x0,=szMenu3	// load x0 -> szMenu3
+    bl putstring	// branch putstring
 
-    ldr x0,=szMenu4
-    bl putstring
-    ldr x0,=dbNumNodes
-    ldr x0,[x0]
-    ldr x1,=szBuffer
-    bl int64asc
-    ldr x0,=szBuffer
-    bl putstring
-    ldr x0,=chLF
-    bl putch
+    ldr x0,=szMenu4	// load x0 -> szMenu4
+    bl putstring	// branch putstring
+    ldr x0,=dbNumNodes	// load x0 -> dbNumNodes
+    ldr x0,[x0]		// load x0 -> x0
+    ldr x1,=szBuffer	// load x1 -> szBuffer
+    bl int64asc		// branch int64asc
+    ldr x0,=szBuffer	// load x0 -> szBuffer
+    bl putstring	// branch putstring
+    ldr x0,=chLF	// load x0 -> chLF
+    bl putch		// branch putch
 
-    ldr x0,=szMenu5
-    bl putstring
-    ldr x0,=szMenu6
-    bl putstring
-    ldr x0,=szMenu7
-    bl putstring
-    ldr x0,=szMenu8
-    bl putstring
-    ldr x0,=szMenu9
-    bl putstring
+    ldr x0,=szMenu5	// load x0 -> szMenu5
+    bl putstring	// branch putstring
+    ldr x0,=szMenu6	// load x0 wit h szMenu6
+    bl putstring	// branch putstring
+    ldr x0,=szMenu7	// laod x0 -> szMenu7
+    bl putstring	// branch putstring
+    ldr x0,=szMenu8	// load x0 -> szMunu8
+    bl putstring	// branch putstring
+    ldr x0,=szMenu9	// laod x0 azMenu9
+    bl putstring	// branch putstring
     
-    ldr x0,=szdash
-    bl putstring
-
-    Print_menu_exit:
-    ldr lr,[sp], #16
-    ret lr
+    ldr x0,=szdash	// load x0 -> szdash
+    bl putstring	// branch putstring
+    
+    Print_menu_exit:	// print menu exit loop
+    ldr lr,[sp], #16	// load lr 
+    ret lr		// return 
 
     
 
-traverse:
-    stp x19, x30, [sp, #-16]!
-    str x20, [sp, #-16]!
-    mov x19,x0
-    mov x20, 0x0
+traverse:		// treverse loop
+    stp x19, x30, [sp, #-16]!	// push
+    str x20, [sp, #-16]!	// push
+    mov x19,x0		// move x19 <- x0
+    mov x20, 0x0	// make x20 = null
 
-    traverse_top:
-        ldr x19,[x19]
-        cmp x19,0x0
-        b.eq traverse_exit
+    traverse_top:	//top of traverse top 
+        ldr x19,[x19]	// load x19 -> x19
+        cmp x19,0x0	// compare x19 to null
+        b.eq traverse_exit	// if equal branch
 
-        ldr x0,=szBopen
-        bl putstring
-        mov x0,x20
-        ldr x1,=szBuffer
-        bl int64asc
-        ldr x0,=szBuffer
-        bl putstring
-        ldr x0,=szBclose
-        bl putstring
+        ldr x0,=szBopen		// load x0 szBopen
+        bl putstring		// branch putstring
+        mov x0,x20		// move x0 - x20
+        ldr x1,=szBuffer	// load x1 -> szBuffer
+        bl int64asc		// branch int64asc
+        ldr x0,=szBuffer	// load x0 -> szBuffer
+        bl putstring		// branmch to puitstring 
+        ldr x0,=szBclose	// laod x0 -> zsBclose
+        bl putstring		// branch -> putstring
 
-        ldr x0,[x19]
-        bl putstring
+        ldr x0,[x19]		// laod x0 -> x19
+        bl putstring		// branch 0- putstring
 
-        add x20, x20, #1
-        add x19, x19, #8
-        b traverse_top
+        add x20, x20, #1	// ++x20
+        add x19, x19, #8	// x19 +8
+        b traverse_top		// branch to top of loop
 
-    traverse_exit:
-    ldr x20, [sp], #16
-    ldp x19, x30, [sp], #16
-    ret lr
+    traverse_exit:		// exit traverse exit
+    ldr x20, [sp], #16		// pop
+    ldp x19, x30, [sp], #16	// pop
+    ret lr			// return 
 
-traverse_free:
-    stp x19, x30, [sp, #-16]!
-    str x20,[sp, #-16]!
+traverse_free:			// branch free
+    stp x19, x30, [sp, #-16]!	// push
+    str x20,[sp, #-16]!		// push 
 
-    mov x19,x0
-    ldr x19,[x19]
+    mov x19,x0			// move x19 - x0
+    ldr x19,[x19]		// load x19 -> x19
     
-    traverse_free_top:
-        cmp x19,0x0
-        b.eq traverse_free_exit
+    traverse_free_top:		// loop
+        cmp x19,0x0		// compare x19 to null
+        b.eq traverse_free_exit	// brancgh of equal
 
-        add x20, x19, #8
-        ldr x20, [x20]
+        add x20, x19, #8	// x20 = x19 +8
+        ldr x20, [x20]		// derefrance x20
 
-        add x20, x19, #8
-        ldr x20, [x20]
-        ldr x0,[x19]
-        bl free
+        add x20, x19, #8	// x20 = x19 +8
+        ldr x20, [x20]		// derefrance 
+        ldr x0,[x19]		// load x0 - x19
+        bl free			// branch top free 
 
-        mov x0,x19
-        bl free
+        mov x0,x19		// move x0 - x19
+        bl free			// branch to free 
 
         mov x19, x20
         b traverse_free_top
