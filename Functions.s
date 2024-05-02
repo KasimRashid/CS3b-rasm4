@@ -115,22 +115,22 @@ Print_menu:		// the menu
 
     ldr x0,=szMenu4	// load x0 -> szMenu4
     bl putstring	// branch putstring
-    ldr x0,=dbNumNodes
-    ldr x0,[x0]
-    ldr x1,=szBuffer
-    bl int64asc
-    ldr x0,=szBuffer
-    bl putstring
-    ldr x0,=chLF
-    bl putch
+    ldr x0,=dbNumNodes	// load x0 -> dbNumNodes
+    ldr x0,[x0]		// load x0 -> x0
+    ldr x1,=szBuffer	// load x1 -> szBuffer
+    bl int64asc		// branch int64asc
+    ldr x0,=szBuffer	// load x0 -> szBuffer
+    bl putstring	// branch putstring
+    ldr x0,=chLF	// load x0 -> chLF
+    bl putch		// branch putch
 
-    ldr x0,=szMenu5
-    bl putstring
-    ldr x0,=szMenu6
-    bl putstring
-    ldr x0,=szMenu7
-    bl putstring
-    ldr x0,=szMenu8
+    ldr x0,=szMenu5	// load x0 -> szMenu5
+    bl putstring	// branch putstring
+    ldr x0,=szMenu6	// load x0 wit h szMenu6
+    bl putstring	// branch putstring
+    ldr x0,=szMenu7	// laod x0 -> szMenu7
+    bl putstring	// branch putstring
+    ldr x0,=szMenu8	// load x0 -> szMunu8
     bl putstring
     ldr x0,=szMenu9
     bl putstring
