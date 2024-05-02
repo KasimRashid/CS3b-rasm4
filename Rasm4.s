@@ -64,29 +64,29 @@ _start:
         bl putch            //Branch and link to putch
 
         ldr x1,=szBuffer	//Point x1 a variable
-        ldrb w0, [x1]
-        ldrb w2,[x1,#1]
-        cmp x0, 0x37
-        b.eq main_loop_end
-        cmp x0, 0x31
-        b.lt menu_choice_invalid
-        cmp x0, 0x37
-        b.gt menu_choice_invalid
+        ldrb w0, [x1]		//Load a byte
+        ldrb w2,[x1,#1]		//Load a byte
+        cmp x0, 0x37		//Compare
+        b.eq main_loop_end	//Branch
+        cmp x0, 0x31		//Compare
+        b.lt menu_choice_invalid	//Branch
+        cmp x0, 0x37		//Compare
+        b.gt menu_choice_invalid	//Branch
 
-        cmp x0, 0x31
-        b.eq case_1
-        cmp w2, 0x61
-        b.eq case_2_a
-        cmp w2, 0x62
-        b.eq case_2_b
-        cmp x0, 0x33
-        b.eq case_3
-        cmp x0, 0x34
-        b.eq case_4
-        cmp x0, 0x35
-        b.eq case_5
-        cmp x0, 0x36
-        b.eq case_6
+        cmp x0, 0x31		//Compare
+        b.eq case_1			//Branch
+        cmp w2, 0x61		//Compare
+        b.eq case_2_a		//Branch
+        cmp w2, 0x62		//Compare
+        b.eq case_2_b		//Branch
+        cmp x0, 0x33		//Compare
+        b.eq case_3			//Branch
+        cmp x0, 0x34		//Compare
+        b.eq case_4			//Branch
+        cmp x0, 0x35		//Compare
+        b.eq case_5			//Branch
+        cmp x0, 0x36		//Compare
+        b.eq case_6			//Branch
 
         main_loop_clear:
         ldr x0,=chLF        //Load x0 with the address of chLF
@@ -95,14 +95,14 @@ _start:
         bl putstring		//Branch and link
         
         ldr x0,=szBuffer	//Point x0 a variable
-        mov x1,#1
+        mov x1,#1			//Move a value into a register
         bl getstring		//Branch and link
 
         ldr x0,=szClearScreen	//Point x0 a variable
         bl putstring			//Branch and link
 
         ldr x0,=szBuffer	//Point x0 a variable
-        mov x1,0x0
+        mov x1,0x0			//Move a value into a register
         str x1,[x0]
 
     b main_loop
@@ -154,7 +154,7 @@ _start:
             ldr x0,=headPtr		//Point x0 a variable
             ldr x1,=tailPtr		//Point x1 a variable
             ldr x2,=iFD
-            ldrb w2,[x2]
+            ldrb w2,[x2]		//Load a byte
         
             bl Read_file		//Branch and link
             b main_loop_clear
