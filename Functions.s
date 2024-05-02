@@ -345,9 +345,6 @@ delete_single_node:		// delete singal node
     b delete_single_node_compleate	// branch to delete
 
     delete_single_node_first:
-    mov x20, x19			// move x20 - x19
-=======
-    delete_single_node_first:
     mov x20, x19		//Move a value into x20
 
     ldr x20,[x20]       //x20 = node to be deleted
