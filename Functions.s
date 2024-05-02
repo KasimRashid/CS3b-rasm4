@@ -77,23 +77,23 @@
     szStrSearch2:   .asciz """ ("
     szStrSearch3:   .asciz " hits in 1 file of 1 searched)\n"
 
-    dbNewNodePtr:   .quad 0
-    dbtailPtr:      .quad 0
-    dbheadPtr:      .quad 0
+    dbNewNodePtr:   .quad 0	// new ptr node
+    dbtailPtr:      .quad 0	// tail ptr
+    dbheadPtr:      .quad 0	// head ptr
 
-    dbByteUseage:   .quad 0
-    dbNumNodes:     .quad 0
+    dbByteUseage:   .quad 0	// all the used bytes
+    dbNumNodes:     .quad 0	// number of nodes
 
-    iFD:    .byte 0     //Store the file discriptor
-    oFD:    .byte 0
-    chLF:   .byte 0xa
-    chSP:   .byte 0x20
+    iFD:    .byte 0     //Store the file descriptor
+    oFD:    .byte 0	// output file discriptor 
+    chLF:   .byte 0xa	// line feed 
+    chSP:   .byte 0x20	// space
 
-    newNodePtr: .quad 0
+    newNodePtr: .quad 0	// NEW ptr node
 
-    .text
+    .text		// text
 
-Print_menu:
+Print_menu:		// the menu 
     str lr,[sp, #-16]!
 
     ldr x0,=szdash
