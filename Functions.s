@@ -94,27 +94,27 @@
     .text		// text
 
 Print_menu:		// the menu 
-    str lr,[sp, #-16]!
+    str lr,[sp, #-16]!	// line register data
 
-    ldr x0,=szdash
-    bl putstring
+    ldr x0,=szdash	// load x0 -> szdash
+    bl putstring	// branch to putstring
 
-    ldr x0,=szMenu1
-    bl putstring
+    ldr x0,=szMenu1	// load x0 -> szMenu1
+    bl putstring	// branch putstring
 
-    ldr x0,=szMenu2
-    bl putstring
-    ldr x0,=dbByteUseage
-    ldr x0,[x0]
-    ldr x1,=szBuffer
-    bl int64asc
-    ldr x0,=szBuffer
-    bl putstring
-    ldr x0,=szMenu3
-    bl putstring
+    ldr x0,=szMenu2	// load x0 -> szMenus2
+    bl putstring	// branch putstring
+    ldr x0,=dbByteUseage	// load x0 -> dbByteUseage
+    ldr x0,[x0]		// load x0 -> x0
+    ldr x1,=szBuffer	// load x1 -> szBuffer
+    bl int64asc		// branch int64asc
+    ldr x0,=szBuffer	// load x0 -> szBuffer
+    bl putstring	// branch putstring
+    ldr x0,=szMenu3	// load x0 -> szMenu3
+    bl putstring	// branch putstring
 
-    ldr x0,=szMenu4
-    bl putstring
+    ldr x0,=szMenu4	// load x0 -> szMenu4
+    bl putstring	// branch putstring
     ldr x0,=dbNumNodes
     ldr x0,[x0]
     ldr x1,=szBuffer
