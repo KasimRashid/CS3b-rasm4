@@ -51,7 +51,7 @@
     .global String_search
 
     .equ NODE_SIZE, 16
-    .equ BUFFER, 21
+    .equ BUFFER, 128
 
 	.data
 
