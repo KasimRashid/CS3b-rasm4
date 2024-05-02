@@ -58,12 +58,12 @@ _start:
         bl Print_menu		//Display the menu
 
         ldr x0,=szBuffer	//Point x0 a variable
-        ldr x1,=szMenuPrompt
-        bl get_kbd_input
+        ldr x1,=szMenuPrompt//Point x1 a variable
+        bl get_kbd_input	//Branch and link
         ldr x0,=chLF        //Load x0 with the address of chLF
         bl putch            //Branch and link to putch
 
-        ldr x1,=szBuffer
+        ldr x1,=szBuffer	//Point x1 a variable
         ldrb w0, [x1]
         ldrb w2,[x1,#1]
         cmp x0, 0x37
@@ -92,14 +92,14 @@ _start:
         ldr x0,=chLF        //Load x0 with the address of chLF
         bl putch            //Branch and link to putch
         ldr x0,=szclearPrompt//Point x0 a variable
-        bl putstring
+        bl putstring		//Branch and link
         
         ldr x0,=szBuffer	//Point x0 a variable
         mov x1,#1
-        bl getstring
+        bl getstring		//Branch and link
 
         ldr x0,=szClearScreen	//Point x0 a variable
-        bl putstring
+        bl putstring			//Branch and link
 
         ldr x0,=szBuffer	//Point x0 a variable
         mov x1,0x0
@@ -109,37 +109,37 @@ _start:
 
     menu_choice_invalid:
     ldr x0,=szOutOfBounds	//Point x0 a variable
-    bl putstring
+    bl putstring			//Branch and link
     b main_loop_clear
 
     case_1:
         ldr x0,=headPtr	//Point x0 a variable
-        bl traverse
+        bl traverse		//Branch and link
         b main_loop_clear
 
     
     case_2:
         case_2_a:
             ldr x0,=szBuffer	//Point x0 a variable
-            ldr x1,=szPrompt
-            bl get_kbd_input
+            ldr x1,=szPrompt	//Point x1 a variable
+            bl get_kbd_input	//Branch and link
             ldr x0,=szBuffer	//Point x0 a variable
-            ldr x1,=szLF
-            bl String_concat
-            ldr x1,=newNodePtr
+            ldr x1,=szLF		//Point x1 a variable
+            bl String_concat	//Branch and link
+            ldr x1,=newNodePtr	//Point x1 a variable
             str x0,[x1]
 
             ldr x0,=tailPtr		//Point x0 a variable
-            ldr x1,=headPtr
+            ldr x1,=headPtr		//Point x1 a variable
             ldr x2,=newNodePtr
-            ldr x2,[x2]
-            bl add_node_to_list
+            ldr x2,[x2]	
+            bl add_node_to_list	//Branch and link
             b main_loop_clear
 
         case_2_b:
             ldr x0,=szBuffer	//Point x0 a variable
-            ldr x1,=szFilePromp
-            bl get_kbd_input
+            ldr x1,=szFilePromp	//Point x1 a variable
+            bl get_kbd_input	//Branch and link
 
             mov x0,#AT_FDCWD    //File descriptor in current directory
             mov x8,#56          //Open file
@@ -152,73 +152,73 @@ _start:
             strb w0,[x1]        //Store file discriptor
 
             ldr x0,=headPtr		//Point x0 a variable
-            ldr x1,=tailPtr
+            ldr x1,=tailPtr		//Point x1 a variable
             ldr x2,=iFD
             ldrb w2,[x2]
         
-            bl Read_file
+            bl Read_file		//Branch and link
             b main_loop_clear
 
     case_3:
         ldr x0,=szBuffer		//Point x0 a variable
-        ldr x1,=szIndexPrompt
-        bl get_kbd_input
+        ldr x1,=szIndexPrompt	//Point x1 a variable
+        bl get_kbd_input		//Branch and link
 
         ldr x0,=szBuffer		//Point x0 a variable
-        bl ascint64
-        ldr x1,=szBuffer
+        bl ascint64				//Branch and link
+        ldr x1,=szBuffer		//Point x1 a variable
         str x0,[x1]
 
         ldr x0,=headPtr			//Point x0 a variable
-        ldr x1,=szBuffer
+        ldr x1,=szBuffer		//Point x1 a variable
         ldr x1,[x1]
-        bl delete_single_node
+        bl delete_single_node	//Branch and link
 
         b main_loop_clear
 
     case_4:
         ldr x0,=szBuffer		//Point x0 a variable
-        ldr x1,=szIndexPrompt
-        bl get_kbd_input
+        ldr x1,=szIndexPrompt	//Point x1 a variable
+        bl get_kbd_input		//Branch and link
 
         ldr x0,=szBuffer		//Point x0 a variable
-        bl ascint64
-        ldr x1,=
+        bl ascint64				//Branch and link
+        ldr x1,=dbBuffer		//Point x1 a variable
         str x0,[x1]
 
         ldr x0,=szBuffer		//Point x0 a variable
-        ldr x1,=szPrompt
-        bl get_kbd_input
+        ldr x1,=szPrompt		//Point x1 a variable
+        bl get_kbd_input		//Branch and link
         ldr x0,=szBuffer		//Point x0 a variable
-        ldr x1,=szLF
-        bl String_concat
-        ldr x1,=newNodePtr
+        ldr x1,=szLF			//Point x1 a variable
+        bl String_concat		//Branch and link
+        ldr x1,=newNodePtr		//Point x1 a variable
         str x0,[x1]
         
         ldr x0,=headPtr			//Point x0 a variable
-        ldr x1,=
+        ldr x1,=dbBuffer		//Point x1 a variable
         ldr x1,[x1]
         ldr x2,=newNodePtr
         ldr x2,[x2]
-        bl edit_node
+        bl edit_node			//Branch and link
 
         b main_loop_clear
 
     case_5:
         ldr x0,=szBuffer		//Point x0 a variable
-        ldr x1,=szPrompt
-        bl get_kbd_input
+        ldr x1,=szPrompt		//Point x1 a variable
+        bl get_kbd_input		//Branch and link
 
         ldr x0,=headPtr			//Point x0 a variable
-        ldr x1,=szBuffer
-        bl String_search
+        ldr x1,=szBuffer		//Point x1 a variable
+        bl String_search		//Branch and link
 
         b main_loop_clear
 
     case_6:
             ldr x0,=szBuffer		//Point x0 a variable
-            ldr x1,=szFilePromp
-            bl get_kbd_input
+            ldr x1,=szFilePromp		//Point x1 a variable
+            bl get_kbd_input		//Branch and link
 
             mov x0,#AT_FDCWD    //File descriptor in current directory
             mov x8,#56          //Open file
@@ -233,7 +233,7 @@ _start:
             ldr x0,=headPtr		//Point x0 a variable
             ldr x1,=oFD         //Point x1 to oFD
             ldrb w1,[x1]        //Store file discriptor
-            bl Output_file
+            bl Output_file		//Branch and link
 
         b main_loop_clear
 
@@ -241,7 +241,7 @@ _start:
     main_loop_end:
 
     ldr x0,=headPtr		//Point x0 a variable
-    bl traverse_free
+    bl traverse_free	//Branch and link
 
     ldr x0, =iFD        //Point x0 to iFD
     ldrb w0,[x0]        //Derefrance
