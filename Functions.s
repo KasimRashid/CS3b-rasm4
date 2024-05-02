@@ -299,53 +299,53 @@ delete_single_node:		// delete singal node
     mov x20, x0			// move x20, x0 
 
     ldr x0,=dbNumNodes		// load x0 -> dbNumNodes
-    ldr x1,[x0]			// 
-    sub x1, x1, #1
-    str x1,[x0]
+    ldr x1,[x0]			// load x1 - x0
+    sub x1, x1, #1		// --x1
+    str x1,[x0]			// store x1 - xo
 
-    ldr x0,[x20]
-    bl String_length
+    ldr x0,[x20]		// load x0 - x20
+    bl String_length		// branch to string length
 
-    add x0, x0, #1
-    ldr x1,=dbByteUseage
-    ldr x2,[x1]
-    sub x2, x2, x0
-    str x2,[x1]
+    add x0, x0, #1		// ++x0 
+    ldr x1,=dbByteUseage	// load x1 -> dbByteUseage
+    ldr x2,[x1]			// load x2  x1
+    sub x2, x2, x0		// x2-= x0
+    str x2,[x1]			// store x2 - x1
 
-    mov x0, x20
-    ldr x3, [x19]
-    ldr x3, [x3, #8]
-    ldr x19, [x19]
-    delete_single_node_loop1:
-        cmp x3, x0
-        b.eq delete_single_node_loop1_end
-        add x3, x3, #8
-        ldr x3, [x3]
+    mov x0, x20			// move x0 - x20 
+    ldr x3, [x19]		// load x3 - x19 
+    ldr x3, [x3, #8]		// laod x3, x3 +8
+    ldr x19, [x19]		// deregrence 
+    delete_single_node_loop1:	// hjump to delete 
+        cmp x3, x0		// compere x3 x0  
+        b.eq delete_single_node_loop1_end	// breanch of = to end
+        add x3, x3, #8		// x3+=8
+        ldr x3, [x3]		// load x3 - x3
 
-        add x19, x19, #8
-        ldr x19,[x19]
+        add x19, x19, #8	// x19+= x19+8
+        ldr x19,[x19]		// derefrance x19 
 
-        b delete_single_node_loop1
+        b delete_single_node_loop1	// branch to delete node 
 
     delete_single_node_loop1_end:   //x19 = prev node, x0 = node
-    mov x20, x0
-    add x20, x20, #8
+    mov x20, x0			// move x10 x0 
+    add x20, x20, #8		// x20 +=8
     ldr x20, [x20]      //x20 = next node
 
-    add x19, x19, #8
-    str x20, [x19]
+    add x19, x19, #8	// x19 +=8
+    str x20, [x19]	// store x20 - x19
 
-    mov x21, x0
-    ldr x0,[x0]
-    bl free
+    mov x21, x0		// move x21 wit x0
+    ldr x0,[x0]		// laod x0 - x0
+    bl free		// branch to free
 
-    mov x0,x21
-    bl free
+    mov x0,x21		// move x0 to x21
+    bl free		// branch to free
 
-    b delete_single_node_compleate
+    b delete_single_node_compleate	// branch to delete
 
-    delete_single_node_first:
-    mov x20, x19
+    delete_single_node_first:		// delete
+    mov x20, x19			// move x20 - x19
     ldr x20,[x20]       //x20 = node to be deleted
     ldr x21,[x20, #8]   //x21 = next node
 
