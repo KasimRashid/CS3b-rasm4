@@ -46,6 +46,10 @@
 
     .global Print_menu
 
+    //x0 points to the head of the linked list
+    //x1 points to a null terminated string to search for
+    .global String_search
+
     .equ NODE_SIZE, 16
     .equ BUFFER, 21
 
@@ -68,7 +72,10 @@
 
     szBopen:        .asciz "["
     szBclose:       .asciz "] "
-
+    szLineNum:      .asciz "Line: "
+    szStrSearch1:   .asciz "Search """
+    szStrSearch2:   .asciz """ ("
+    szStrSearch3:   .asciz " hits in 1 file of 1 searched)\n"
 
     dbNewNodePtr:   .quad 0
     dbtailPtr:      .quad 0
@@ -80,6 +87,7 @@
     iFD:    .byte 0     //Store the file discriptor
     oFD:    .byte 0
     chLF:   .byte 0xa
+    chSP:   .byte 0x20
 
     newNodePtr: .quad 0
 
@@ -593,6 +601,122 @@ Output_file:
 
     output_file_return:
     ldp x19, lr, [sp], #16
+    ret lr
+
+
+//x0 points to the head of the linked list
+//x1 points to a null terminated string to search for
+String_search:
+    stp x19, x20, [sp, #-16]!
+    stp x21, lr, [sp, #-16]!
+    stp x22, x23,[sp, #-16]!
+
+    ldr x2,=newNodePtr
+    str x0,[x2]
+    mov x19, x0
+    mov x20, x1
+    mov x21, 0x0
+
+    string_search_loop1:
+        ldr x19,[x19]
+        cmp x19,0x0
+        b.eq string_search_loop2
+
+        ldr x0,[x19]
+        bl String_toUpperCase
+        mov x22, x0
+
+        mov x0, x20
+        bl String_toUpperCase
+        mov x23, x0
+
+        mov x0, x22
+        mov x1, x23
+        bl String_indexOf_3
+
+        cmp x0, #-1
+        b.eq string_search_incriment1
+
+        add x21, x21, #1
+
+        string_search_incriment1:
+        mov x0, x22
+        bl free
+        mov x0, x23
+        bl free
+
+        add x19, x19, #8
+        b string_search_loop1
+
+    string_search_loop2:
+    ldr x1,=szBuffer
+    mov x0, x21
+    bl int64asc
+
+    ldr x0,=szStrSearch1
+    bl putstring
+    mov x0,x20
+    bl putstring
+    ldr x0,=szStrSearch2
+    bl putstring
+    ldr x0,=szBuffer
+    bl putstring
+    ldr x0,=szStrSearch3
+    bl putstring
+
+    mov x21, 0x0
+    ldr x2,=newNodePtr
+    ldr x19,[x2]
+
+    string_search_loop:
+        ldr x19,[x19]
+        cmp x19,0x0
+        b.eq string_search_return
+
+        ldr x0,[x19]
+        bl String_toUpperCase
+        mov x22, x0
+
+        mov x0, x20
+        bl String_toUpperCase
+        mov x23, x0
+
+        mov x0, x22
+        mov x1, x23
+        bl String_indexOf_3
+
+        cmp x0, #-1
+        b.eq string_search_incriment
+
+        ldr x0,=szLineNum
+        bl putstring
+        mov x0,x21
+        ldr x1,=szBuffer
+        bl int64asc
+        ldr x0,=szBuffer
+        bl putstring
+        ldr x0,=chSP
+        bl putch
+
+        ldr x0,[x19]
+        bl putstring
+
+        string_search_incriment:
+        mov x0, x22
+        bl free
+        mov x0, x23
+        bl free
+
+        add x19, x19, #8
+        add x21, x21, #1
+        b string_search_loop
+
+
+    string_search_return:
+    ldp x22, x23,[sp], #16
+    ldp x21, lr, [sp], #16
+    ldp x19, x20, [sp], #16
+
     ret lr
 
     .end
